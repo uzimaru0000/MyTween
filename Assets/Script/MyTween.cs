@@ -14,28 +14,31 @@ public class MyTween : MonoBehaviour {
 		ScaleBy
 	}
 
-	Dictionary<TweenType, TweenData> que;
+	TweenData que;
+	TweenType type;
 
 	// Update is called once per frame
 	void Update() {
-
+		
 	}
 
 	static void AddQue(GameObject obj, TweenData data, TweenType type) {
-		var tween = obj.GetComponent<MyTween>();
-		if (!tween) {
-			tween = obj.AddComponent<MyTween>();
-		}
-		tween.que.Add(type, data);
+		var tween = obj.AddComponent<MyTween>();
+		tween.que = data;
+		tween.type = type;
 	}
+
+	public enum TweenMode {
+		Liner,
+		Sphere
+	}	
 }
 
 public class TweenData {
 
 	Vector3 _value;
 	public float time;
-	public TweenMode mode;
-	Action _updata;
+	public float delay;
 	Action _callback;
 
 	public Vector3 position {
@@ -47,7 +50,7 @@ public class TweenData {
 		}
 	}
 
-	public Vector3 rotation {
+	public Vector3 scale {
 		get {
 			return _value;
 		}
@@ -56,55 +59,20 @@ public class TweenData {
 		}
 	}
 
-	public Vector3 Scale {
+	public Quaternion rotation {
 		get {
-			return _value;
+			return Quaternion.Euler(_value);
 		}
 		set {
-			_value = value;
-		}
-	}
-
-	public float x {
-		get {
-			return _value.x;
-		}
-		set {
-			_value.x = value;
-		}
-	}
-
-	public float y {
-		get {
-			return _value.y;
-		}
-		set {
-			_value.y = value;
-		}
-	}
-
-	public float z {
-		get {
-			return _value.z;
-		}
-		set {
-			_value.z = value;
-		}
-	}
-
-	public Action update {
-		get {
-			if (_updata == null) _updata = () => { };
-			return _updata;
-		}
-		set {
-			_updata = value;
+			_value = value.eulerAngles;
 		}
 	}
 
 	public Action callback {
 		get {
-			if (_callback == null) _callback = () => { };
+			if (_callback == null) {
+				_callback = () => {};
+			}
 			return _callback;
 		}
 		set {
@@ -112,9 +80,4 @@ public class TweenData {
 		}
 	}
 
-}
-
-public enum TweenMode {
-	Liner,
-	Sphere
 }
